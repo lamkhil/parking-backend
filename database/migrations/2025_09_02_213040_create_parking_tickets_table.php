@@ -22,27 +22,26 @@ return new class extends Migration
 
             // Informasi Tiket
             $table->string('ticket_number')->unique();
-            $table->dateTime('issued_at');
-            $table->dateTime('expires_at');
             $table->dateTime('exited_at')->nullable(); // waktu keluar
             $table->integer('duration_minutes')->nullable(); // durasi parkir, hitung dari issued_at ke exited_at
 
             $table->string('vehicle_plate_number');
+            $table->foreignId('vehicle_type_id')->nullable()->constrained()->nullOnDelete()->index();
             $table->enum('status', ['active', 'expired', 'paid'])->default('active');
 
             // Detail Transaksi dan Pembayaran
             $table->decimal('amount', 10, 2)->default(0.00);
             $table->string('currency', 3)->default('IDR');
-            $table->string('payment_method')->default('cash');
+            $table->string('payment_method')->nullable(); // misal: cash, qris
             $table->string('transaction_id')->nullable()->unique();
             $table->string('external_reference')->nullable()->unique();
             $table->dateTime('paid_at')->nullable();
-            $table->string('paid_by')->nullable();
+            $table->foreignId('paid_by')->nullable()->constrained('users')->nullOnDelete();
 
             // Penerbit & Pembatalan
-            $table->string('issued_by')->nullable();
+            $table->foreignId('issued_by')->nullable()->constrained('users')->nullOnDelete();
             $table->dateTime('cancelled_at')->nullable();
-            $table->string('cancelled_by')->nullable();
+            $table->foreignId('cancelled_by')->nullable()->constrained('users')->nullOnDelete();
 
             // Informasi Tambahan
             $table->string('name')->nullable(); // bisa dihapus jika tidak digunakan
@@ -58,9 +57,9 @@ return new class extends Migration
             $table->json('metadata')->nullable(); // ganti dari string ke json untuk fleksibilitas
 
             // Audit Trail
-            $table->string('created_by')->nullable();
-            $table->string('updated_by')->nullable();
-            $table->string('deleted_by')->nullable();
+            $table->foreignId('created_by')->nullable()->constrained('users')->nullOnDelete();
+            $table->foreignId('updated_by')->nullable()->constrained('users')->nullOnDelete();
+            $table->foreignId('deleted_by')->nullable()->constrained('users')->nullOnDelete();
 
             // Jejak Pengguna
             $table->string('ip_address')->nullable();
