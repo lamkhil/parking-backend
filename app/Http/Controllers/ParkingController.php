@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\ParkingRateRule;
 use App\Models\ParkingTicket;
+use App\Models\VehicleType;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
@@ -177,5 +178,15 @@ class ParkingController extends Controller
     public function show($id)
     {
         return ParkingTicket::findOrFail($id);
+    }
+
+    public function vehicleType()
+    {
+        $vehicleType = VehicleType::with('parkingRateRules')->get();
+
+        return response()->json([
+            'data'=>$vehicleType,
+            'message' => 'Fetch Data Successfully'
+        ]);
     }
 }

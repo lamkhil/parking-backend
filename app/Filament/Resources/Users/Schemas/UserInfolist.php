@@ -20,10 +20,10 @@ class UserInfolist
                     ->dateTime(),
                 TextEntry::make('updated_at')
                     ->dateTime(),
-                TextEntry::make('gate_id')
-                    ->numeric(),
-                TextEntry::make('shift_id')
-                    ->numeric(),
+                TextEntry::make('parkingGate.name')
+                    ->label('Parking Gate'),
+                TextEntry::make('shift.name')
+                    ->label('Shift'),
             ]);
     }
 }

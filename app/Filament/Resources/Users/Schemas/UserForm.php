@@ -2,7 +2,10 @@
 
 namespace App\Filament\Resources\Users\Schemas;
 
+use App\Models\ParkingGate;
+use App\Models\Shift;
 use Filament\Forms\Components\DateTimePicker;
+use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Schema;
 
@@ -22,10 +25,18 @@ class UserForm
                 TextInput::make('password')
                     ->password()
                     ->required(),
-                TextInput::make('gate_id')
-                    ->numeric(),
-                TextInput::make('shift_id')
-                    ->numeric(),
+                Select::make('parking_gate_id')
+                    ->label('Parking Gate')
+                    ->options(
+                        ParkingGate::all()->pluck('name','id')
+                    )
+                    ->searchable(),
+                Select::make('shift_id')
+                    ->label('Shift')
+                    ->options(
+                        Shift::all()->pluck('name','id')
+                    )
+                    ->searchable(),
             ]);
     }
 }

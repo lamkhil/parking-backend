@@ -31,11 +31,9 @@ class UsersTable
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-                TextColumn::make('gate_id')
-                    ->numeric()
+                TextColumn::make('parkingGate.name')
                     ->sortable(),
-                TextColumn::make('shift_id')
-                    ->numeric()
+                TextColumn::make('shift.name')
                     ->sortable(),
             ])
             ->filters([

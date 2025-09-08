@@ -20,7 +20,7 @@ return new class extends Migration
         });
 
         Schema::table('users', function (Blueprint $table) {
-            $table->foreignId('gate_id')->nullable()->constrained('parking_gates')->nullOnDelete();
+            $table->foreignId('parking_gate_id')->nullable()->constrained('parking_gates')->nullOnDelete();
             $table->foreignId('shift_id')->nullable()->constrained('shifts')->nullOnDelete();
         });
     }

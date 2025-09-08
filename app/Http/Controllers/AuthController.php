@@ -12,14 +12,25 @@ class AuthController extends Controller
         $credentials = $request->validate([
             'email' => ['required', 'email'],
             'password' => ['required'],
-        ]); 
+        ]);
         if (auth()->attempt($credentials)) {
             $user = auth()->user();
+
+            $user = $user->load('shift', 'parkingGate');
+            if ($user->shift == null || $user->parkingGate == null) {
+                auth()->logout();
+                return response()->json([
+                    'message' => 'User belum di setting oleh admin.'
+                ], 400);
+            }
+
+
             $token = $user->createToken('api-token')->plainTextToken;
 
             return response()->json([
                 'message' => 'Login successful',
                 'token' => $token,
+                'data' => $user
             ], 200);
         }
 
@@ -30,7 +41,16 @@ class AuthController extends Controller
 
     public function me(Request $request)
     {
-        return response()->json($request->user()->load('shift', 'parkingGate'), 200);
+        $user = $request->user()->load('shift', 'parkingGate');
+        if ($user->shift == null || $user->parkingGate == null) {
+            return response()->json([
+                'message' => 'User belum di setting oleh admin.'
+            ], 400);
+        }
+        return response()->json([
+            'data' => $user,
+            'message' => 'user fetch successfully'
+        ], 200);
     }
 
     //logout
