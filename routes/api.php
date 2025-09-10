@@ -13,4 +13,4 @@ Route::get('/me', [AuthController::class, 'me'])->middleware('auth:sanctum');
 //parking
 use App\Http\Controllers\ParkingController;
 Route::get('/vehicle-type',[ParkingController::class, 'vehicleType'])->middleware('auth:sanctum');
-Route::post('/entryAndExit', [ParkingController::class, 'entryAndExit'])->middleware('auth:sanctum');
+Route::post('/entry-and-exit', [ParkingController::class, 'entryAndExit'])->middleware('auth:sanctum');

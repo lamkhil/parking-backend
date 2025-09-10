@@ -23,6 +23,11 @@ return new class extends Migration
             $table->foreignId('parking_gate_id')->nullable()->constrained('parking_gates')->nullOnDelete();
             $table->foreignId('shift_id')->nullable()->constrained('shifts')->nullOnDelete();
         });
+
+
+        Schema::table('parking_tickets', function (Blueprint $table) {
+            $table->foreignId('shift_id')->nullable()->constrained('shifts')->nullOnDelete();
+        });
     }
 
     /**

@@ -87,25 +87,34 @@ class ParkingController extends Controller
     public function entryAndExit(Request $request)
     {
         $request->validate([
+            'ticket_number' => 'required|string',
             'vehicle_plate_number' => 'required|string',
             'vehicle_type_id' => 'required|exists:vehicle_types,id',
             'payment_method' => 'required',
             'photo' => 'nullable|image|max:2048',
         ]);
 
+        if (ParkingTicket::where('ticket_number', $request->ticket_number)->exists()) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Ticket sudah diinput'
+            ], 401);
+        }
+
         // Buat tiket baru
         $ticket = ParkingTicket::create([
             'gate_in_id' => auth()->user()->parking_gate_id ?? null,
             'gate_out_id' => auth()->user()->parking_gate_id ?? null,
-            'ticket_number' => strtoupper(Str::random(10)),
+            'shift_id' => auth()->user()->shift_id,
+            'ticket_number' => $request->ticket_number,
             'vehicle_plate_number' => $request->vehicle_plate_number,
-            'created_by' => $request->user()->id ?? null,
-            'updated_by' => $request->user()->id ?? null,
+            'created_by' => auth()->user()->id ?? null,
+            'updated_by' => auth()->user()->id  ?? null,
             'ip_address' => $request->ip(),
             'user_agent' => $request->header('User-Agent'),
             'vehicle_type_id' => $request->vehicle_type_id,
-            'photo_in' => $request->file('photo')->store('photos', 'public'),
-            'photo_out' => $request->file('photo')->store('photos', 'public'),
+            'photo_in' => $request->file('photo') != null ? $request->file('photo')->store('photos', 'public') : null,
+            'photo_out' => $request->file('photo') != null ? $request->file('photo')->store('photos', 'public') : null,
         ]);
 
         // Hitung durasi parkir (misal 1 menit untuk simulasi)
@@ -121,15 +130,51 @@ class ParkingController extends Controller
             'exited_at' => $exitTime,
             'duration_minutes' => $durationMinutes,
             'amount' => $amount,
-            'status' => 'paid',
             'payment_method' => $request->payment_method,
+        ]);
+
+        return response()->json([
+            'message' => 'Tiket berhasil dibuat',
+            'data' => $ticket->load('parkingGateIn', 'parkingGateOut','shift', 'vehicleType'),
+        ]);
+    }
+
+    public function pay(Request $request)
+    {
+        $request->validate([
+            'ticket_number' => 'required|string|exists:parking_tickets,ticket_number',
+        ]);
+
+        // Cari tiket
+        $ticket = ParkingTicket::where('ticket_number', $request->ticket_number)->first();
+
+        if (!$ticket) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Tiket tidak ditemukan',
+            ], 404);
+        }
+
+        // Cek apakah sudah dibayar
+        if ($ticket->status === 'paid') {
+            return response()->json([
+                'success' => false,
+                'message' => 'Tiket sudah dibayar sebelumnya',
+                'data' =>  $ticket->load('parkingGateIn', 'parkingGateOut','shift', 'vehicleType'),
+            ], 400);
+        }
+
+        // Update tiket untuk pembayaran
+        $ticket->update([
+            'status' => 'paid',
             'paid_by' => auth()->user()->id ?? null,
             'paid_at' => now(),
         ]);
 
         return response()->json([
-            'message' => 'Tiket berhasil dibuat dan pembayaran berhasil',
-            'ticket' => $ticket,
+            'success' => true,
+            'message' => 'Pembayaran berhasil',
+            'data' =>  $ticket->load('parkingGateIn', 'parkingGateOut','shift', 'vehicleType'),
         ]);
     }
 
@@ -185,7 +230,7 @@ class ParkingController extends Controller
         $vehicleType = VehicleType::with('parkingRateRules')->get();
 
         return response()->json([
-            'data'=>$vehicleType,
+            'data' => $vehicleType,
             'message' => 'Fetch Data Successfully'
         ]);
     }
