@@ -113,6 +113,7 @@ class ParkingController extends Controller
             'ip_address' => $request->ip(),
             'user_agent' => $request->header('User-Agent'),
             'vehicle_type_id' => $request->vehicle_type_id,
+            'payment_method' => $request->payment_method,
             'photo_in' => $request->file('photo') != null ? $request->file('photo')->store('photos', 'public') : null,
             'photo_out' => $request->file('photo') != null ? $request->file('photo')->store('photos', 'public') : null,
         ]);
@@ -128,9 +129,8 @@ class ParkingController extends Controller
         // Update tiket untuk exit dan payment
         $ticket->update([
             'exited_at' => $exitTime,
-            'duration_minutes' => $durationMinutes,
-            'amount' => $amount,
-            'payment_method' => $request->payment_method,
+            'duration_minutes' => (int)$durationMinutes,
+            'amount' => $amount
         ]);
 
         return response()->json([

@@ -15,26 +15,12 @@ class ParkingTicketsTable
     {
         return $table
             ->columns([
-                TextColumn::make('gate_in_id')
-                    ->numeric()
+                TextColumn::make('parkingGateIn.name')
                     ->sortable(),
-                TextColumn::make('gate_out_id')
-                    ->numeric()
+                TextColumn::make('shift.name')
                     ->sortable(),
                 TextColumn::make('ticket_number')
                     ->searchable(),
-                TextColumn::make('issued_at')
-                    ->dateTime()
-                    ->sortable(),
-                TextColumn::make('expires_at')
-                    ->dateTime()
-                    ->sortable(),
-                TextColumn::make('exited_at')
-                    ->dateTime()
-                    ->sortable(),
-                TextColumn::make('duration_minutes')
-                    ->numeric()
-                    ->sortable(),
                 TextColumn::make('vehicle_plate_number')
                     ->searchable(),
                 TextColumn::make('status')
@@ -46,39 +32,7 @@ class ParkingTicketsTable
                     ->searchable(),
                 TextColumn::make('payment_method')
                     ->searchable(),
-                TextColumn::make('transaction_id')
-                    ->searchable(),
-                TextColumn::make('external_reference')
-                    ->searchable(),
-                TextColumn::make('paid_at')
-                    ->dateTime()
-                    ->sortable(),
-                TextColumn::make('paid_by')
-                    ->searchable(),
-                TextColumn::make('issued_by')
-                    ->searchable(),
-                TextColumn::make('cancelled_at')
-                    ->dateTime()
-                    ->sortable(),
-                TextColumn::make('cancelled_by')
-                    ->searchable(),
-                TextColumn::make('name')
-                    ->searchable(),
-                TextColumn::make('description')
-                    ->searchable(),
-                TextColumn::make('notes')
-                    ->searchable(),
-                TextColumn::make('slug')
-                    ->searchable(),
-                TextColumn::make('status_message')
-                    ->searchable(),
-                TextColumn::make('status_code')
-                    ->searchable(),
                 TextColumn::make('created_by')
-                    ->searchable(),
-                TextColumn::make('updated_by')
-                    ->searchable(),
-                TextColumn::make('deleted_by')
                     ->searchable(),
                 TextColumn::make('ip_address')
                     ->searchable(),
